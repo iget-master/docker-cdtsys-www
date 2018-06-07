@@ -12,4 +12,8 @@ RUN apt -y update && apt install -y \
     libxss1 \
     libnss3 \
     xvfb \
+    # Imagick dependency allow thumbnail and image processing
+    php-imagick \
+    # Rsyslog allow sharing the log with the ELK
+    rsyslog \
     && echo 'Packages installed'

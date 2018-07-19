@@ -16,4 +16,9 @@ RUN apt -y update && apt install -y \
     php-imagick \
     # Rsyslog allow sharing the log with the ELK
     rsyslog \
-    && echo 'Packages installed'
+    nano \
+    && rm -rf /var/lib/apt/lists/* && echo 'Packages installed and lists cleaned'
+    
+# The hirak/prestissimo package speed-up the
+# composer install step significatively.
+RUN composer global require hirak/prestissimo

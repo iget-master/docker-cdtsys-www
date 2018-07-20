@@ -19,6 +19,8 @@ RUN apt -y update && apt install -y \
     nano \
     && rm -rf /var/lib/apt/lists/* && echo 'Packages installed and lists cleaned'
     
+RUN locale-gen pt_BR.UTF-8 && locale-gen it_IT.UTF-8 && locale-gen es_ES.UTF-8
+    
 # The hirak/prestissimo package speed-up the
 # composer install step significatively.
 RUN composer global require hirak/prestissimo

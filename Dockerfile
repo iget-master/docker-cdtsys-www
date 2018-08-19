@@ -20,7 +20,13 @@ RUN apt -y update && apt install -y \
     && rm -rf /var/lib/apt/lists/* && echo 'Packages installed and lists cleaned'
     
 RUN locale-gen pt_BR.UTF-8 && locale-gen it_IT.UTF-8 && locale-gen es_ES.UTF-8
+
+# Add Supervisor configuration files
+COPY conf/supervisor/* /etc/supervisor/conf.d/
     
 # The hirak/prestissimo package speed-up the
 # composer install step significatively.
 RUN composer global require hirak/prestissimo
+
+# Add Laravel Schedule to crontab
+RUN echo "* * * * * php /var/www/artisan schedule:run >> /dev/null 2>&1" | crontab -u www-data -

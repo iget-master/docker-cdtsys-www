@@ -1,28 +1,28 @@
-FROM iget/default-www
+FROM iget/default-www:alpine
 
-# Install packages
-RUN apt-get clean
-RUN apt -y update && apt install -y \
-    php7.2-imagick \
-    # XVFB dependencies to allow running headless NightmareJS
-    libgtk2.0-0 \
-    libgconf-2-4 \
-    libasound2 \
-    libxtst6 \
-    libxss1 \
-    libnss3 \
+# Add Bash since Alpine is bundled just with SH
+RUN apk add --no-cache ca-certificates wget \
+    php7-imagick \
+    chromium \
     xvfb \
-    # Imagick dependency allow thumbnail and image processing
-    php-imagick \
-    # Rsyslog allow sharing the log with the ELK
-    rsyslog \
-    nano \
-    && rm -rf /var/lib/apt/lists/* && echo 'Packages installed and lists cleaned'
-    
-RUN locale-gen pt_BR.UTF-8 && locale-gen it_IT.UTF-8 && locale-gen es_ES.UTF-8
+    rsyslog && echo 'Packages installed and lists cleaned'
+
+# Install language pack
+RUN wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
+    wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.25-r0/glibc-2.25-r0.apk && \
+    wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.25-r0/glibc-bin-2.25-r0.apk && \
+    wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.25-r0/glibc-i18n-2.25-r0.apk && \
+    apk add glibc-bin-2.25-r0.apk glibc-i18n-2.25-r0.apk glibc-2.25-r0.apk && \
+    rm glibc-bin-2.25-r0.apk glibc-i18n-2.25-r0.apk glibc-2.25-r0.apk
+
+# Iterate through all locale and install it
+# Note that locale -a is not available in alpine linux, use `/usr/glibc-compat/bin/locale -a` instead
+COPY ./locale.list locale.list
+RUN cat locale.list | xargs -i /usr/glibc-compat/bin/localedef -i {} -f UTF-8 {}.UTF-8  && \
+    rm locale.list
 
 # Add Supervisor configuration files
-COPY conf/supervisor/* /etc/supervisor/conf.d/
+COPY conf/supervisor/* /etc/supervisor.d/
     
 # The hirak/prestissimo package speed-up the
 # composer install step significatively.

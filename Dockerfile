@@ -1,9 +1,10 @@
-FROM iget/default-www
+FROM iget/default-www:php-8.1
 
 # Install packages
 RUN apt-get clean
 RUN apt -y update && apt install -y \
-    php7.2-imagick \
+    php8.1-imagick \
+    php8.1-curl \
     # XVFB dependencies to allow running headless NightmareJS
     libgtk-3-0 \
     libgconf-2-4 \
@@ -12,8 +13,9 @@ RUN apt -y update && apt install -y \
     libxss1 \
     libnss3 \
     xvfb \
+    cron \
     # Imagick dependency allow thumbnail and image processing
-    php-imagick \
+#    php-imagick \
     # Rsyslog allow sharing the log with the ELK
     rsyslog \
     nano \
